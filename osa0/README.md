@@ -3,6 +3,11 @@ lol
 sequenceDiagram
     participant browser
     participant server
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    Note right of browser: The browser sends the form
+    activate server
+    server->>browser: Status 302 redirection
     
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
