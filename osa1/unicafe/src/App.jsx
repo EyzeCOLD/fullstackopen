@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 
 const App = () => {
   const [good, setGood] = useState(0);
@@ -8,9 +9,9 @@ const App = () => {
   return (
     <div>
       <Header text="Give feedback" />
-      <Button text="Good" value={good} onClick={setGood} />
-      <Button text="Neutral" value={neutral} onClick={setNeutral} />
-      <Button text="Bad" value={bad} onClick={setBad} />
+      <Button text="Good" setValue={setGood} />
+      <Button text="Neutral" setValue={setNeutral} />
+      <Button text="Bad" setValue={setBad} />
       <Header text="Statistics" />
       <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
@@ -29,12 +30,12 @@ const Header = (props) => {
 
 const Button = (props) => {
   console.log("Button:", props);
-  const { text, value, onClick } = props;
+  const { text, setValue } = props;
   return (
     <>
       <button
         onClick={() => {
-          onClick(value + 1);
+          setValue((prev) => prev + 1);
         }}
       >
         {text}
