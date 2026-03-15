@@ -13,28 +13,48 @@ function App() {
     "The only way to go fast, is to go well.",
   ];
 
-  const votes = Array(anecdotes.length).fill(0);
+  const initialVotes = Array(anecdotes.length).fill(0);
+  const [votes, setVotes] = useState(initialVotes);
   const [selected, setSelected] = useState(0);
   console.log(votes, selected);
 
   return (
     <div>
-      <p>{anecdotes[selected]} </p>
-      <p>Has {votes[selected]} votes. </p>
-      <VoteButton selected={selected} votes={votes} />
+      <h1>Anecdote of the day</h1>
+      <Anecdote anecdote={anecdotes[selected]} votes={votes[selected]} />
+
+      <VoteButton selected={selected} votes={votes} setVotes={setVotes} />
       <NextButton setValue={setSelected} randMax={anecdotes.length} />
+
+      <h1>Anecdote with most votes</h1>
+      <MostVoted anecdotes={anecdotes} votes={votes} />
     </div>
   );
 }
 
-const VoteButton = (props) => {
-  console.log("VoteButton:", props);
-  const { selected, votes } = props;
+const Anecdote = ({ anecdote, votes }) => {
+  console.log("Anecdote: anecdote:", anecdote, "votes:", votes);
+  return (
+    <>
+      <p>
+        <i>"{anecdote}"</i>
+      </p>
+      <p>Has {votes} votes. </p>
+    </>
+  );
+};
+
+const VoteButton = ({ selected, setVotes }) => {
+  console.log("VoteButton: selected:", selected, "setVotes:", setVotes);
   return (
     <>
       <button
         onClick={() => {
-          votes[selected] += 1;
+          setVotes((prevVotes) => {
+            const copy = [...prevVotes];
+            copy[selected]++;
+            return copy;
+          });
         }}
       >
         Vote
@@ -43,9 +63,8 @@ const VoteButton = (props) => {
   );
 };
 
-const NextButton = (props) => {
-  console.log("NextButton:", props);
-  const { setValue, randMax } = props;
+const NextButton = ({ setValue, randMax }) => {
+  console.log("NextButton: setValue:", setValue, "randMax:", randMax);
   return (
     <>
       <button
@@ -55,6 +74,16 @@ const NextButton = (props) => {
       >
         Next anecdote
       </button>
+    </>
+  );
+};
+
+const MostVoted = ({ anecdotes, votes }) => {
+  console.log("MostVoted: anecdotes:", anecdotes, "votes:", votes);
+  const winner = votes.indexOf(Math.max(...votes));
+  return (
+    <>
+      <Anecdote anecdote={anecdotes[winner]} votes={votes[winner]} />
     </>
   );
 };
