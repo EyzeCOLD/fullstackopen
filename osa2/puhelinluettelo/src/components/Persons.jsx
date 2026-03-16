@@ -1,4 +1,12 @@
-const Persons = ({ persons, nameFilter }) => {
+const Persons = ({ persons, nameFilter, handleDelete }) => {
+  console.log(
+    "Persons: persons:",
+    persons,
+    "nameFilter:",
+    nameFilter,
+    "handleDelete:",
+    handleDelete,
+  );
   return (
     <>
       {persons
@@ -8,6 +16,14 @@ const Persons = ({ persons, nameFilter }) => {
         .map((p, i) => (
           <p key={i}>
             {p.name} {p.number}
+            <button
+              onClick={() => {
+                console.log("onClick:", p.id);
+                handleDelete(p);
+              }}
+            >
+              delete
+            </button>
           </p>
         ))}
     </>
