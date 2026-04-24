@@ -1,29 +1,19 @@
 {
   "persons": [
     {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": "2"
+      "id": "cda6",
+      "name": "Marjaleena",
+      "number": "ihanteena"
     },
     {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": "4"
+      "id": "02ee",
+      "name": "mat",
+      "number": "1"
     },
     {
-      "id": "fdb9",
-      "name": "niina",
-      "number": "5758"
-    },
-    {
-      "id": "11bb",
-      "name": "Pertti",
-      "number": "Portto"
-    },
-    {
-      "id": "e2fb",
-      "name": "Heikki Huikka",
-      "number": "+358405857566"
+      "id": "bd1e",
+      "name": "mat",
+      "number": "1"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
