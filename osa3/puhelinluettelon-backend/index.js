@@ -3,6 +3,7 @@ import morgan from "morgan";
 const app = express();
 
 app.use(express.json());
+app.use(express.static("dist"));
 
 morgan.token("reqdata", function (req, _) {
   return JSON.stringify(req.body);
@@ -87,7 +88,7 @@ app.post("/api/persons", (request, response) => {
   };
 
   persons = persons.concat(newPerson);
-  response.status(201).end();
+  response.status(201).json(newPerson);
 });
 
 app.get("/info", (_, response) => {
@@ -97,7 +98,7 @@ app.get("/info", (_, response) => {
   response.send(infoPage);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
