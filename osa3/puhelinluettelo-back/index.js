@@ -1,5 +1,7 @@
 import express from "express";
 import morgan from "morgan";
+import "dotenv/config";
+import { Person } from "./models/person.js";
 const app = express();
 
 app.use(express.json());
@@ -14,55 +16,37 @@ app.use(
   ),
 );
 
-let persons = [
-  {
-    id: "1",
-    name: "Mikko",
-    number: "0503214562",
-  },
-  {
-    id: "2",
-    name: "Augustus",
-    number: "0457685319",
-  },
-  {
-    id: "3",
-    name: "Sari",
-    number: "0407782940",
-  },
-];
+app.get("/api/people", async (_, response) => {
+  const people = await Person.find({});
 
-app.get("/api/persons", (_, response) => {
-  response.json(persons);
+  response.json(people);
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/people/:id", async (request, response) => {
   const id = request.params.id;
-  const person = persons.find((p) => p.id === id);
 
-  if (person) {
-    response.send(person);
-  } else {
+  try {
+    const person = await Person.findById(id);
+
+    if (person) response.send(person);
+  } catch (error) {
+    console.error("get by id error:", error);
     response.status(404).end();
   }
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/people/:id", async (request, response) => {
   const id = request.params.id;
 
-  persons = persons.filter((p) => p.id != id);
+  try {
+    await Person.findByIdAndDelete(id);
+  } catch (error) {
+    console.error("delete error:", error);
+  }
   response.status(204).end();
 });
 
-const generateId = () => {
-  let id;
-  do {
-    id = Math.floor(Math.random() * 214748368);
-  } while (persons.find((p) => p.id === id));
-  return id;
-};
-
-app.post("/api/persons", (request, response) => {
+app.post("/api/people", async (request, response) => {
   const body = request.body;
 
   console.log(body);
@@ -73,26 +57,25 @@ app.post("/api/persons", (request, response) => {
   if (!body.name) {
     return response.status(404).json({ error: "Name missing" });
   }
-  if (!body.number) {
+  if (!body.phoneNumber) {
     return response.status(404).json({ error: "Number missing" });
   }
 
-  if (persons.find((p) => p.name === body.name)) {
+  const found = await Person.find({ name: body.name });
+  if (found.length > 0) {
     return response.status(409).json({ error: "Name must be unique" });
   }
 
-  const newPerson = {
-    id: generateId(),
+  const person = new Person({
     name: body.name,
-    number: body.number,
-  };
+    phoneNumber: body.phoneNumber,
+  });
 
-  persons = persons.concat(newPerson);
-  response.status(201).json(newPerson);
+  response.status(201).json(await person.save());
 });
 
 app.get("/info", (_, response) => {
-  const infoPage = `<p>Phonebook has info for ${persons.length} persons</p>
+  const infoPage = `<p>Phonebook has info for ${Person.length} people</p>
     <p>${new Date(Date.now()).toString()}</p>`;
 
   response.send(infoPage);
