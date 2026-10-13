@@ -16,13 +16,13 @@ app.use(
   ),
 );
 
-app.get("/api/people", async (_, response) => {
-  const people = await Person.find({});
+app.get("/api/persons", async (_, response) => {
+  const persons = await Person.find({});
 
-  response.json(people);
+  response.json(persons);
 });
 
-app.get("/api/people/:id", async (request, response, next) => {
+app.get("/api/persons/:id", async (request, response, next) => {
   const id = request.params.id;
 
   try {
@@ -35,7 +35,7 @@ app.get("/api/people/:id", async (request, response, next) => {
   }
 });
 
-app.delete("/api/people/:id", async (request, response, next) => {
+app.delete("/api/persons/:id", async (request, response, next) => {
   const id = request.params.id;
 
   try {
@@ -46,7 +46,7 @@ app.delete("/api/people/:id", async (request, response, next) => {
   }
 });
 
-app.post("/api/people", async (request, response) => {
+app.post("/api/persons", async (request, response) => {
   const body = request.body;
 
   console.log(body);
@@ -75,13 +75,13 @@ app.post("/api/people", async (request, response) => {
 });
 
 app.get("/info", (_, response) => {
-  const infoPage = `<p>Phonebook has info for ${Person.length} people</p>
+  const infoPage = `<p>Phonebook has info for ${Person.length} persons</p>
     <p>${new Date(Date.now()).toString()}</p>`;
 
   response.send(infoPage);
 });
 
-app.put("/api/people/:id", async (request, response, next) => {
+app.put("/api/persons/:id", async (request, response, next) => {
   const { name, phoneNumber } = request.body;
 
   try {
