@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
-import Persons from "./components/Persons";
-import PersonService from "./services/persons";
+import People from "./components/People";
+import PersonService from "./services/people";
 import Notification from "./components/Notification";
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
+  const [people, setPeople] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [nameFilter, setNameFilter] = useState("");
@@ -20,7 +20,7 @@ const App = () => {
   const updateList = () => {
     PersonService.getAll().then((res) => {
       console.log("updateList:", res);
-      setPersons(res);
+      setPeople(res);
     });
   };
 
@@ -43,8 +43,8 @@ const App = () => {
   const updateNumber = (id, newPerson) => {
     PersonService.update(id, newPerson)
       .then((res) => {
-        newNotification(`Updated phonenumber of  '${res.name}'`, false);
-        setPersons((prev) => prev.map((p) => (p.name === res.name ? res : p)));
+        newNotification(`Updated phone number of  '${res.name}'`, false);
+        setPeople((prev) => prev.map((p) => (p.name === res.name ? res : p)));
       })
       .catch((error) => newNotification(`${error}`, true));
   };
@@ -53,7 +53,7 @@ const App = () => {
     PersonService.create(newPerson)
       .then((res) => {
         newNotification(`Added '${res.name}' to the phonebook`, false);
-        setPersons((prev) => prev.concat(res));
+        setPeople((prev) => prev.concat(res));
       })
       .catch((error) => newNotification(`${error}`, true));
   };
@@ -62,19 +62,19 @@ const App = () => {
     event.preventDefault();
     const newPerson = {
       name: newName,
-      number: newNumber,
+      phoneNumber: newNumber,
     };
 
     if (newPerson.name.trim() == "") {
       return newNotification("You must give a name", true);
     }
-    if (newPerson.number.trim() == "") {
+    if (newPerson.phoneNumber.trim() == "") {
       return newNotification("You must give a phone number", true);
     }
     setNewName("");
     setNewNumber("");
 
-    const found = persons.find(
+    const found = people.find(
       (p) => p.name.toLocaleUpperCase() === newPerson.name.toLocaleUpperCase(),
     );
     if (found) {
@@ -92,7 +92,7 @@ const App = () => {
       PersonService.deletePerson(person.id)
         .then(() => {
           newNotification(`'${person.name}' deleted from the phonebook`, false);
-          setPersons((prev) => prev.filter((p) => p.id != person.id));
+          setPeople((prev) => prev.filter((p) => p.id != person.id));
         })
         .catch((error) => {
           newNotification(`${error}`, true);
@@ -122,8 +122,8 @@ const App = () => {
       <br />
 
       <h2>Numbers</h2>
-      <Persons
-        persons={persons}
+      <People
+        people={people}
         nameFilter={nameFilter}
         handleDelete={handleDelete}
       />
