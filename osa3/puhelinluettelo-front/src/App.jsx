@@ -17,11 +17,10 @@ const App = () => {
   });
   const notificationTimeout = useRef(null);
 
-  const updateList = () => {
-    PersonService.getAll().then((res) => {
-      console.log("updateList:", res);
-      setPeople(res);
-    });
+  const updateList = async () => {
+    const response = await PersonService.getAll();
+    console.log("updateList:", response);
+    setPeople(response);
   };
 
   useEffect(() => updateList(), []);
@@ -40,22 +39,36 @@ const App = () => {
     );
   };
 
-  const updateNumber = (id, newPerson) => {
-    PersonService.update(id, newPerson)
-      .then((res) => {
-        newNotification(`Updated phone number of  '${res.name}'`, false);
-        setPeople((prev) => prev.map((p) => (p.name === res.name ? res : p)));
-      })
-      .catch((error) => newNotification(`${error}`, true));
+  const handleError = (error) => {
+    if (error.response?.data) {
+      const message =
+        error.response.data.error || error.response.data.message || error;
+      newNotification(message, true);
+    } else {
+      newNotification(error, true);
+    }
   };
 
-  const addNewPerson = (newPerson) => {
-    PersonService.create(newPerson)
-      .then((res) => {
-        newNotification(`Added '${res.name}' to the phonebook`, false);
-        setPeople((prev) => prev.concat(res));
-      })
-      .catch((error) => newNotification(`${error}`, true));
+  const updateNumber = async (id, newPerson) => {
+    try {
+      const response = await PersonService.update(id, newPerson);
+      newNotification(`Updated phone number of  '${response.name}'`, false);
+      setPeople((prev) =>
+        prev.map((p) => (p.name === response.name ? response : p)),
+      );
+    } catch (error) {
+      handleError(error, true);
+    }
+  };
+
+  const addNewPerson = async (newPerson) => {
+    try {
+      const response = await PersonService.create(newPerson);
+      newNotification(`Added '${response.name}' to the phonebook`, false);
+      setPeople((prev) => prev.concat(response));
+    } catch (error) {
+      handleError(error, true);
+    }
   };
 
   const handleSubmit = (event) => {
@@ -86,18 +99,17 @@ const App = () => {
     }
   };
 
-  const handleDelete = (person) => {
+  const handleDelete = async (person) => {
     console.log("handleDelete:", person);
     if (window.confirm(`Delete ${person.name} from the phonebook?`)) {
-      PersonService.deletePerson(person.id)
-        .then(() => {
-          newNotification(`'${person.name}' deleted from the phonebook`, false);
-          setPeople((prev) => prev.filter((p) => p.id != person.id));
-        })
-        .catch((error) => {
-          newNotification(`${error}`, true);
-          updateList();
-        });
+      try {
+        await PersonService.deletePerson(person.id);
+        newNotification(`'${person.name}' deleted from the phonebook`, false);
+        setPeople((prev) => prev.filter((p) => p.id != person.id));
+      } catch (error) {
+        handleError(error, true);
+        updateList();
+      }
     }
   };
 

@@ -6,7 +6,7 @@ const Notification = ({ message, isError }) => {
     borderWidth: "2px",
   };
 
-  if (message === "") {
+  if (!message) {
     return null;
   }
 
