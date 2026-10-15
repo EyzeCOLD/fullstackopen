@@ -46,10 +46,8 @@ app.delete("/api/persons/:id", async (request, response, next) => {
   }
 });
 
-app.post("/api/persons", async (request, response) => {
+app.post("/api/persons", async (request, response, next) => {
   const body = request.body;
-
-  console.log(body);
 
   if (!body) {
     return response.status(400).json({ error: "Request body missing" });
@@ -71,7 +69,12 @@ app.post("/api/persons", async (request, response) => {
     phoneNumber: body.phoneNumber,
   });
 
-  response.status(201).json(await person.save());
+  try {
+    const added = await person.save();
+    response.status(201).json(added);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get("/info", (_, response) => {
@@ -109,6 +112,9 @@ const errorHandler = (error, _, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  }
+  if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
   }
 
   next(error);
